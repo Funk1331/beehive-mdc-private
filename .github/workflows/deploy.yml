@@ -1,0 +1,33 @@
+name: Build and Deploy
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
+
+      - name: Pushes to Public Repo
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'dist'
+          destination-github-username: 'YOUR_GITHUB_USERNAME'
+          destination-repository-name: 'YOUR_PUBLIC_REPO_NAME'
+          user-email: 'your-email@example.com'
+          target-branch: main
